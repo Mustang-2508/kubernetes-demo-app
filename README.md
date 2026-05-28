@@ -27,13 +27,31 @@ src/main/java/com/myapp/spring_demo/
 
 ## Running the App
 
-Ensure PostgreSQL is running and accessible at `postgres:5432` with database `testdb` (see `application.yml`).
+### 1. Start PostgreSQL via Docker
+
+```bash
+docker-compose up -d
+```
+
+This spins up a PostgreSQL 16 container (`postgres-demo`) on port `5432` with database `testdb`. Data is persisted in a named Docker volume so it survives container restarts.
+
+### 2. Start the Spring Boot app
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
 App starts on **http://localhost:8080**
+
+### Stop / Tear down
+
+```bash
+# Stop the container (keeps data)
+docker-compose down
+
+# Stop and delete all data (volume)
+docker-compose down -v
+```
 
 ---
 
