@@ -25,15 +25,62 @@ src/main/java/com/myapp/spring_demo/
     └── Product.java
 ```
 
-## Running the App
+## Running on Kubernetes
+
+> Requires: Docker Desktop with Kubernetes enabled (or minikube)
+
+### 1. Build the Docker image
+
+```bash
+docker build -t kubernetes-demo-app:latest .
+```
+
+> If using **minikube**, load the image into its registry instead:
+> ```bash
+> minikube image load kubernetes-demo-app:latest
+> ```
+
+### 2. Apply all manifests
+
+```bash
+kubectl apply -f k8s/
+```
+
+This creates (in dependency order — Kubernetes handles it):
+- `postgres-secret` — DB credentials
+- `postgres-pvc` — persistent storage for Postgres
+- `postgres` Deployment + `postgres-service` — Postgres pod reachable internally at `postgres-service:5432`
+- `spring-demo` Deployment + `spring-demo-service` — app exposed on NodePort `30080`
+
+### 3. Check everything is running
+
+```bash
+kubectl get pods
+kubectl get services
+```
+
+Wait until both pods show `Running`.
+
+### 4. Access the app
+
+- **Docker Desktop K8s:** `http://localhost:30080`
+- **Minikube:** `minikube service spring-demo-service --url`
+
+### Tear down
+
+```bash
+kubectl delete -f k8s/
+```
+
+---
+
+## Running Locally (Docker Compose)
 
 ### 1. Start PostgreSQL via Docker
 
 ```bash
 docker-compose up -d
 ```
-
-This spins up a PostgreSQL 16 container (`postgres-demo`) on port `5432` with database `testdb`. Data is persisted in a named Docker volume so it survives container restarts.
 
 ### 2. Start the Spring Boot app
 
@@ -56,6 +103,8 @@ docker-compose down -v
 ---
 
 ## API Endpoints & cURL Commands
+
+> Base URL: `http://localhost:8080` (local) or `http://localhost:30080` (Kubernetes)
 
 ### Get All Products
 
